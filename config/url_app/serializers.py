@@ -6,7 +6,7 @@ from url_app.models import Url
 
 
 class UrlSerializer(serializers.ModelSerializer):
-    url = serializers.URLField(required=True)
+    short_url = serializers.CharField(read_only=True)
 
     class Meta:
         model = Url
@@ -20,8 +20,9 @@ class UrlSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         while True:
+            num = str(random.randint(0, 9))
             short_url = ''.join(
-                random.choices(string.ascii_lowercase + string.ascii_uppercase + string.ascii_letters, k=6))
+                random.choices(string.ascii_letters, k=5)) + num
             if not Url.objects.filter(short_url=short_url).exists():
                 break
         validated_data.update({'short_url': short_url})
@@ -31,6 +32,3 @@ class UrlSerializer(serializers.ModelSerializer):
 
 class GetFullLinkSerializer(serializers.Serializer):
     short_url = serializers.CharField(max_length=6, required=True, min_length=6)
-
-
-
